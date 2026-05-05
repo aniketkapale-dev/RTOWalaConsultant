@@ -1,0 +1,68 @@
+{% extends "layout_view/base.html" %}
+{% load static %}
+{% block content %}
+<section id="clients-page" class="page">
+  <div class="page-header">
+    <div>
+      <h1>Manage Clients</h1>
+      <p>Create and manage customer records.</p>
+    </div><button class="btn-primary" onclick="openClientModal()">+ Add Client</button>
+  </div>
+  <div class="cards-grid">
+    <div class="stat-card"><label>Total Clients</label>
+      <h2 id="clientCount">0</h2>
+    </div>
+    <div class="stat-card"><label>Total Vehicles</label>
+      <h2 id="clientVehicleCount">0</h2>
+    </div>
+    <div class="stat-card"><label>Active Clients</label>
+      <h2 id="activeClientCount">0</h2>
+    </div>
+  </div>
+  <div class="content-card">
+    <div class="toolbar"><input class="search-input" id="clientSearch" placeholder="Search clients..."
+        oninput="loadClients()"></div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Vehicles</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="clientsBody"></tbody>
+    </table>
+  </div>
+</section>
+<div id="clientModal" class="modal-backdrop">
+  <div class="modal">
+    <form id="clientForm" onsubmit="saveClient(event)">
+      <div class="modal-header">
+        <div>
+          <h2 id="clientModalTitle">Add New Client</h2>
+          <p>Enter client details to create a new record.</p>
+        </div><button type="button" class="modal-close" data-close="clientModal">×</button>
+      </div>
+      <div class="modal-body"><input type="hidden" id="clientId">
+        <div class="form-grid">
+          <div class="form-group full"><label>Client Name *</label><input id="clientName" required
+              placeholder="e.g. John Doe"></div>
+          <div class="form-group full"><label>Phone Number *</label><input id="clientMobile" required placeholder="+91">
+          </div>
+          <div class="form-group full"><label>Email</label><input id="clientEmail" type="email"
+              placeholder="client@email.com"></div>
+          <div class="form-group full"><label>Address</label><textarea id="clientAddress"
+              placeholder="Enter full address"></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn-secondary"
+          data-close="clientModal">Cancel</button><button class="btn-primary">+ Save Client</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/clients.js' %}"></script>{% endblock %}

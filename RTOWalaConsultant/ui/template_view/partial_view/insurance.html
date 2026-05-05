@@ -1,0 +1,66 @@
+{% extends "layout_view/base.html" %}
+{% load static %}
+{% block content %}
+<section id="update-insurance-page" class="page">
+  <div class="page-header">
+    <div>
+      <h1>Update Insurance</h1>
+      <p>Select client and vehicle to view documents. Renew expired documents by adding a new record.</p>
+    </div>
+  </div>
+  <div class="content-card">
+    <div class="filter-row">
+      <div class="form-group"><label>Client *</label><select id="insuranceClient"
+          onchange="loadInsuranceVehicles()"></select></div>
+      <div class="form-group"><label>Vehicle Number *</label><select id="insuranceVehicle"
+          onchange="loadInsuranceDocuments()"></select></div>
+    </div>
+  </div>
+  <div class="content-card">
+    <h3>Vehicle Document History</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Document No.</th>
+          <th>Provider</th>
+          <th>Issue</th>
+          <th>Expiry</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="insuranceBody"></tbody>
+    </table>
+  </div>
+</section>
+<div id="renewModal" class="modal-backdrop">
+  <div class="modal modal-lg">
+    <form id="renewForm" onsubmit="saveRenewal(event)">
+      <div class="modal-header">
+        <div>
+          <h2>Renew Document</h2>
+          <p>Add a new document record for the selected vehicle.</p>
+        </div><button type="button" class="modal-close" data-close="renewModal">×</button>
+      </div>
+      <div class="modal-body"><input type="hidden" id="renewVehicle"><input type="hidden" id="renewCategory">
+        <div class="form-grid">
+          <div class="form-group"><label>Vehicle</label><input id="renewVehicleLabel" disabled></div>
+          <div class="form-group"><label>Document</label><input id="renewCategoryLabel" disabled></div>
+          <div class="form-group"><label>Document Number</label><input id="renewNumber"></div>
+          <div class="form-group"><label>Provider</label><input id="renewProvider"></div>
+          <div class="form-group"><label>Issue Date</label><input id="renewIssue" type="date"></div>
+          <div class="form-group"><label>Start Date</label><input id="renewStart" type="date"></div>
+          <div class="form-group"><label>Expiry Date *</label><input id="renewEnd" type="date" required></div>
+          <div class="form-group"><label>Amount</label><input id="renewAmount" type="number" step="0.01"></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn-secondary"
+          data-close="renewModal">Cancel</button><button class="btn-primary">Save Renewal</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/insurance.js' %}"></script>{% endblock %}

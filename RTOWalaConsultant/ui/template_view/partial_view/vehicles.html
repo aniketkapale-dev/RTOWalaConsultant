@@ -1,0 +1,72 @@
+{% extends "layout_view/base.html" %}
+{% load static %}
+{% block content %}
+<section id="vehicles-page" class="page">
+  <div class="page-header">
+    <div>
+      <h1>Manage Vehicles</h1>
+      <p>Select a client first, then add vehicle details.</p>
+    </div><button class="btn-primary" onclick="openVehicleModal()">+ Add Vehicle</button>
+  </div>
+  <div class="content-card">
+    <div class="toolbar"><input class="search-input" id="vehicleSearch" placeholder="Search vehicles..."
+        oninput="loadVehicles()"></div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Vehicle No.</th>
+          <th>Client</th>
+          <th>Make / Model</th>
+          <th>Type</th>
+          <th>Fuel</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="vehiclesBody"></tbody>
+    </table>
+  </div>
+</section>
+<div id="vehicleModal" class="modal-backdrop">
+  <div class="modal">
+    <form id="vehicleForm" onsubmit="saveVehicle(event)">
+      <div class="modal-header">
+        <div>
+          <h2 id="vehicleModalTitle">Add New Vehicle</h2>
+          <p>Select client and add vehicle data.</p>
+        </div><button type="button" class="modal-close" data-close="vehicleModal">×</button>
+      </div>
+      <div class="modal-body"><input type="hidden" id="vehicleId">
+        <div class="form-grid">
+          <div class="form-group full"><label>Client *</label><select id="vehicleClient" required></select></div>
+          <div class="form-group"><label>Vehicle Number *</label><input id="vehicleNumber" required
+              placeholder="MH12AB1234"></div>
+          <div class="form-group"><label>Make / Model *</label><input id="vehicleName" required
+              placeholder="Maruti Swift VXI"></div>
+          <div class="form-group"><label>Vehicle Type</label><select id="vehicleType">
+              <option value="">Select type</option>
+              <option>Bike</option>
+              <option>Car</option>
+              <option>Truck</option>
+              <option>Bus</option>
+              <option>Auto</option>
+              <option>Other</option>
+            </select></div>
+          <div class="form-group"><label>Fuel Type</label><select id="fuelType">
+              <option value="">Select fuel</option>
+              <option>Petrol</option>
+              <option>Diesel</option>
+              <option>CNG</option>
+              <option>Electric</option>
+              <option>Hybrid</option>
+              <option>Other</option>
+            </select></div>
+        </div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn-secondary"
+          data-close="vehicleModal">Cancel</button><button class="btn-primary">+ Save Vehicle</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/vehicles.js' %}"></script>{% endblock %}

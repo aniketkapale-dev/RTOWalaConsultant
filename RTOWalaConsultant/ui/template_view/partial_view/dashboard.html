@@ -1,0 +1,44 @@
+{% extends "layout_view/base.html" %}
+{% load static %}
+{% block content %}
+<section id="dashboard-page" class="page">
+    <div class="page-header">
+        <div>
+            <h1>Dashboard Overview</h1>
+            <p>Current month expiry and renewal status.</p>
+        </div>
+    </div>
+    <div class="cards-grid">
+        <div class="stat-card"><label>Total Clients</label>
+            <h2 id="totalClients">0</h2>
+        </div>
+        <div class="stat-card"><label>Total Vehicles</label>
+            <h2 id="totalVehicles">0</h2>
+        </div>
+        <div class="stat-card"><label>Active Insurance</label>
+            <h2 id="activeInsurance">0</h2>
+        </div>
+        <div class="stat-card"><label>Monthly Revenue</label>
+            <h2 id="monthlyRevenue">₹0</h2>
+        </div>
+    </div>
+    <div class="content-card">
+        <div class="toolbar"><input class="search-input" id="dashSearch" placeholder="Search clients, vehicles..."
+                oninput="loadDashboard()"><a class="icon-btn" href="/documents/">View All →</a></div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Vehicle No.</th>
+                    <th>Client Name</th>
+                    <th>Doc Type</th>
+                    <th>Status</th>
+                    <th>Expiry</th>
+                </tr>
+            </thead>
+            <tbody id="expiringBody"></tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>{% endblock %}

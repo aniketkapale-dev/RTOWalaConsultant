@@ -1,0 +1,21 @@
+{% load static %}
+<!doctype html>
+<html>
+
+<head>
+    <title>RTOWalaConsultant Login</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+
+<body class="login-body">
+    <form class="login-card" onsubmit="login(event)">
+        <h1>RTO Consultant</h1>
+        <p>Admin Panel Login</p><input id="username" placeholder="Username" value="admin"><input id="password"
+            type="password" placeholder="Password" value="Admin@12345"><button class="btn-primary">Login</button>
+        <p id="loginMsg" class="error-text"></p>
+    </form>
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/login.js' %}"></script>
+</body>
+
+</html>

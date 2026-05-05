@@ -1,0 +1,25 @@
+{% extends "layout_view/base.html" %}
+{% load static %}
+{% block content %}<section id="logs-page" class="page">
+    <div class="page-header">
+        <div>
+            <h1>Error Logs</h1>
+            <p>Application exception history.</p>
+        </div>
+    </div>
+    <div class="content-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Message</th>
+                    <th>Path</th>
+                    <th>Method</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody id="logsBody"></tbody>
+        </table>
+    </div>
+</section>{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/error_logs.js' %}"></script>{% endblock %}
