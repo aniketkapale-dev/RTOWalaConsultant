@@ -8,9 +8,26 @@ async function loadVehicles(){
   vehiclesBody.innerHTML = data.map(v => `<tr><td><b>${v.vehicle_number}</b></td><td>${v.client_name||'-'}</td><td>${v.vehicle_name||'-'}</td><td>${v.vehicle_type||'-'}</td><td>${v.fuel_type||'-'}</td><td>${deleteButton('vehicles/', v.id, 'loadVehicles')}</td></tr>`).join('');
 }
 async function openVehicleModal(){ resetForm('vehicleForm'); await loadVehicleClients(); openModal('vehicleModal'); }
-async function saveVehicle(e){
+async function saveVehicle(e) {
   e.preventDefault();
-  await apiPost('vehicles/', { client:formValue('vehicleClient'), vehicle_number:formValue('vehicleNumber').toUpperCase(), vehicle_name:formValue('vehicleName'), vehicle_type:formValue('vehicleType') || null, fuel_type:formValue('fuelType') || null });
-  closeModal('vehicleModal'); await loadVehicles();
+  const form = e.target;
+  if (!validateForm(form)) return;
+
+  try {
+    await apiPost('vehicles/', {
+      client: formValue('vehicleClient'),
+      vehicle_number: formValue('vehicleNumber').toUpperCase(),
+      vehicle_name: formValue('vehicleName') || null,
+      vehicle_type: formValue('vehicleType') || null,
+      fuel_type: formValue('fuelType') || null
+    }, {
+      form: form,
+      successMessage: 'Vehicle saved successfully.'
+    });
+    closeModal('vehicleModal');
+    await loadVehicles();
+  } catch (error) {
+    // Error handled by apiRequest
+  }
 }
 document.addEventListener('DOMContentLoaded', loadVehicles);

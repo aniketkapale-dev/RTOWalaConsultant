@@ -4,16 +4,28 @@
 
 <head>
     <title>RTOWalaConsultant Login</title>
+    <link rel="stylesheet" href="{% static 'css/common/toast.css' %}">
+    <link rel="stylesheet" href="{% static 'css/common/loader.css' %}">
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
 
 <body class="login-body">
+    <div id="globalToastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <div id="globalLoader" class="global-loader" aria-live="assertive" aria-busy="false">
+        <div class="global-loader-box" role="status">
+            <span class="global-loader-spinner" aria-hidden="true"></span>
+            <span class="global-loader-text">Loading...</span>
+        </div>
+    </div>
     <form class="login-card" onsubmit="login(event)">
         <h1>RTO Consultant</h1>
-        <p>Admin Panel Login</p><input id="username" placeholder="Username" value="admin"><input id="password"
-            type="password" placeholder="Password" value="Admin@12345"><button class="btn-primary">Login</button>
-        <p id="loginMsg" class="error-text"></p>
+        <p>Admin Panel Login</p><input id="username" name="username" data-api-field="username" required
+            placeholder="Username" value="admin"><input id="password" name="password" data-api-field="password"
+            type="password" required placeholder="Password" value="Admin@12345"><button class="btn-primary">Login</button>
     </form>
+    <script src="{% static 'js/common/toast.js' %}"></script>
+    <script src="{% static 'js/common/loader.js' %}"></script>
+    <script src="{% static 'js/common/validation.js' %}"></script>
     <script src="{% static 'js/common.js' %}"></script>
     <script src="{% static 'js/login.js' %}"></script>
 </body>

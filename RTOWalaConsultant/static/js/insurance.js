@@ -27,9 +27,31 @@ async function loadInsuranceDocuments(){
 function openRenew(vehicleId, categoryId, vehicleNo, categoryName){
   resetForm('renewForm'); byId('renewVehicle').value=vehicleId; byId('renewCategory').value=categoryId; byId('renewVehicleLabel').value=vehicleNo; byId('renewCategoryLabel').value=categoryName; openModal('renewModal');
 }
-async function saveRenewal(e){
+async function saveRenewal(e) {
   e.preventDefault();
-  await apiPost('vehicle-documents/', { vehicle:formValue('renewVehicle'), document_category:formValue('renewCategory'), document_number:formValue('renewNumber') || null, issue_date:formValue('renewIssue') || null, start_date:formValue('renewStart') || null, end_date:formValue('renewEnd'), provider:formValue('renewProvider') || null, amount:formValue('renewAmount') || null, status:'active', is_current:true });
-  closeModal('renewModal'); await loadInsuranceDocuments();
+  const form = e.target;
+  if (!validateForm(form)) return;
+
+  try {
+    await apiPost('vehicle-documents/', {
+      vehicle: formValue('renewVehicle'),
+      document_category: formValue('renewCategory'),
+      document_number: formValue('renewNumber') || null,
+      issue_date: formValue('renewIssue') || null,
+      start_date: formValue('renewStart') || null,
+      end_date: formValue('renewEnd'),
+      provider: formValue('renewProvider') || null,
+      amount: formValue('renewAmount') || null,
+      status: 'active',
+      is_current: true
+    }, {
+      form: form,
+      successMessage: 'Insurance updated successfully.'
+    });
+    closeModal('renewModal');
+    await loadInsuranceDocuments();
+  } catch (error) {
+    // Error handled by apiRequest
+  }
 }
 document.addEventListener('DOMContentLoaded', initInsurance);

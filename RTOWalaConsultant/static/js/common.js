@@ -8,24 +8,53 @@ function authHeaders(json=true){
   return h;
 }
 async function apiRequest(path, options={}){
-  const res = await fetch(API + path, { headers: authHeaders(options.body !== undefined), ...options });
-  if(res.status === 401){ localStorage.clear(); location.href = '/'; return null; }
-  let data = null;
-  try { data = await res.json(); } catch(e) {}
-  if(!res.ok){ alert(data?.message || data?.detail || 'Request failed'); throw data || res; }
-  return data;
+  const { skipLoader=false, successMessage='', errorMessage='', form=null, button=null, redirectOnUnauthorized=true, ...fetchOptions } = options;
+  const loaderButton = button || form?.querySelector('button[type="submit"], button:not([type])');
+  if(!skipLoader && window.showLoader) window.showLoader({ button: loaderButton });
+  try {
+    const res = await fetch(API + path, { headers: authHeaders(fetchOptions.body !== undefined), ...fetchOptions });
+    let data = null;
+    try { data = await res.json(); } catch(e) {}
+    if(res.status === 401){
+      localStorage.clear();
+      if(window.showError) showError(errorMessage || 'Session expired. Please login again.');
+      if(redirectOnUnauthorized) window.setTimeout(() => { location.href = '/'; }, 700);
+      throw data || res;
+    }
+    if(!res.ok){
+      const mapped = form && window.applyServerValidation ? applyServerValidation(form, data) : false;
+      if(!mapped && window.showError) showError(errorMessage || apiErrorMessage(data));
+      throw data || res;
+    }
+    if(successMessage && window.showSuccess) showSuccess(successMessage);
+    return data;
+  } catch(error) {
+    if(error instanceof TypeError && window.showError) showError('Network error. Please check your connection.');
+    throw error;
+  } finally {
+    if(!skipLoader && window.hideLoader) window.hideLoader({ button: loaderButton });
+  }
 }
-const apiGet = path => apiRequest(path, { method:'GET', headers:authHeaders(false) });
-const apiPost = (path,data) => apiRequest(path, { method:'POST', body:JSON.stringify(data) });
-const apiPatch = (path,data) => apiRequest(path, { method:'PATCH', body:JSON.stringify(data) });
-const apiDelete = path => apiRequest(path, { method:'DELETE', headers:authHeaders(false) });
+function apiErrorMessage(data){
+  if(!data) return 'Request failed';
+  if(data.message) return data.message;
+  if(data.detail) return data.detail;
+  if(typeof data === 'string') return data;
+  const firstKey = Object.keys(data)[0];
+  const firstValue = firstKey ? data[firstKey] : null;
+  return Array.isArray(firstValue) ? firstValue[0] : 'Request failed';
+}
+const apiGet = (path, options={}) => apiRequest(path, { method:'GET', headers:authHeaders(false), ...options });
+const apiPost = (path,data,options={}) => apiRequest(path, { method:'POST', body:JSON.stringify(data), ...options });
+const apiPatch = (path,data,options={}) => apiRequest(path, { method:'PATCH', body:JSON.stringify(data), ...options });
+const apiDelete = (path, options={}) => apiRequest(path, { method:'DELETE', headers:authHeaders(false), ...options });
 function rows(payload){ return payload?.data?.results || payload?.data || payload?.results || payload || []; }
 function byId(id){ return document.getElementById(id); }
 function setText(id, val){ const el=byId(id); if(el) el.innerText = val ?? '-'; }
 function formValue(id){ return byId(id)?.value?.trim() || ''; }
-function openModal(id){ byId(id)?.classList.add('show'); }
+function openModal(id){ byId(id)?.classList.add('show'); if(window.refreshSelect2) window.refreshSelect2(byId(id)); }
 function closeModal(id){ byId(id)?.classList.remove('show'); }
-function resetForm(id){ const f=byId(id); if(f) f.reset(); }
+function resetForm(id){ const f=byId(id); if(f) { f.reset(); if(window.clearFormErrors) window.clearFormErrors(f); if(window.refreshSelect2) window.refreshSelect2(f); } }
 function formatDate(v){ return v ? new Date(v).toLocaleDateString('en-IN') : '-'; }
 function statusBadge(status){ return `<span class="status status-${String(status||'active').toLowerCase()}">${status || 'active'}</span>`; }
 function rupee(v){ return '₹' + Number(v || 0).toLocaleString('en-IN'); }
@@ -35,7 +64,7 @@ function showEmpty(tbodyId, cols, text='No records found'){
 }
 async function deleteRecord(endpoint, id, reloadFn){
   if(!confirm('Delete this record?')) return;
-  try { await apiDelete(`${endpoint}${id}/`); if(window[reloadFn]) window[reloadFn](); }
+  try { await apiDelete(`${endpoint}${id}/`, { successMessage:'Record deleted successfully.' }); if(window[reloadFn]) window[reloadFn](); }
   catch(e) { /* handled */ }
 }
 function deleteButton(endpoint,id,reloadFn){ return `<button class="icon-btn danger" onclick="deleteRecord('${endpoint}',${id},'${reloadFn}')">Delete</button>`; }
@@ -43,10 +72,34 @@ async function fillSelect(selectId, endpoint, labelFn, valueFn=x=>x.id, placehol
   const el=byId(selectId); if(!el) return [];
   const data=rows(await apiGet(endpoint));
   el.innerHTML = `<option value="">${placeholder}</option>` + data.map(x=>`<option value="${valueFn(x)}">${labelFn(x)}</option>`).join('');
+  if(window.refreshSelect2) window.refreshSelect2(el);
   return data;
 }
-function bindModalClose(){
-  document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
-  document.querySelectorAll('.modal-backdrop').forEach(m => m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); }));
+function bindModalClose() {
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalId = btn.dataset.close;
+      closeModal(modalId);
+      // Cleanup validation errors on modal close
+      const modal = byId(modalId);
+      if (modal) {
+        const form = modal.querySelector('form');
+        if (form && window.clearFormErrors) window.clearFormErrors(form);
+      }
+    });
+  });
+  document.querySelectorAll('.modal-backdrop').forEach(m => {
+    m.addEventListener('click', e => {
+      if (e.target === m) {
+        closeModal(m.id);
+        // Cleanup validation errors on backdrop click
+        const modal = byId(m.id);
+        if (modal) {
+          const form = modal.querySelector('form');
+          if (form && window.clearFormErrors) window.clearFormErrors(form);
+        }
+      }
+    });
+  });
 }
 document.addEventListener('DOMContentLoaded', bindModalClose);
