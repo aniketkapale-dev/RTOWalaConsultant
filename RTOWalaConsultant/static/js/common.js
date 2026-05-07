@@ -6,7 +6,7 @@ function authHeaders(json=true){
   if(json) h['Content-Type'] = 'application/json';
   if(token()) h.Authorization = 'Bearer ' + token();
   return h;
-}
+}   
 async function apiRequest(path, options={}){
   const { skipLoader=false, successMessage='', errorMessage='', form=null, button=null, redirectOnUnauthorized=true, ...fetchOptions } = options;
   const loaderButton = button || form?.querySelector('button[type="submit"], button:not([type])');
