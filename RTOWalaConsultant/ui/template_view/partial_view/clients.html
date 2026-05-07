@@ -8,16 +8,6 @@
       <p>Create and manage customer records.</p>
     </div><button class="btn-primary" onclick="openClientModal()">+ Add Client</button>
   </div>
-  <div class="cards-grid">
-    <div class="stat-card"><label>Total Clients</label>
-      <h2 id="clientCount">0</h2>
-    </div>
-    <div class="stat-card"><label>Total Vehicles</label>
-      <h2 id="clientVehicleCount">0</h2>
-    </div>
-    <div class="stat-card"><label>Active Clients</label>
-      <h2 id="activeClientCount">0</h2>
-    </div>
   </div>
   <div class="content-card">
     <div class="toolbar"><input class="search-input" id="clientSearch" placeholder="Search clients..."
@@ -35,6 +25,7 @@
       </thead>
       <tbody id="clientsBody"></tbody>
     </table>
+    <div id="clientPagination" class="pagination-wrapper"></div>
   </div>
 </section>
 <div id="clientModal" class="modal-backdrop">

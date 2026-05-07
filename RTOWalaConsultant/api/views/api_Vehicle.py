@@ -1,3 +1,4 @@
+from rest_framework import filters
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from api.models import Vehicle
 from api.serializers import VehicleSerializer
@@ -9,6 +10,8 @@ from .base import BaseViewSet
 )
 class VehicleViewSet(BaseViewSet):
     serializer_class = VehicleSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['vehicle_number', 'client__name']
 
     def get_queryset(self):
         qs = Vehicle.objects.select_related('client').filter(is_deleted=False).order_by('-id')

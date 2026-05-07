@@ -1,6 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.decorators import action
 from api.models import VehicleDocument
 from api.serializers import VehicleDocumentSerializer
 from .base import BaseViewSet
@@ -19,18 +20,27 @@ class VehicleDocumentViewSet(BaseViewSet):
         client_id = self.request.query_params.get('client')
         vehicle_id = self.request.query_params.get('vehicle')
         current = self.request.query_params.get('current')
+        status = self.request.query_params.get('status')
+
         if category:
             qs = qs.filter(document_category__name__iexact=category)
         if client_id:
             qs = qs.filter(vehicle__client_id=client_id)
         if vehicle_id:
             qs = qs.filter(vehicle_id=vehicle_id)
+        if status and status in dict(VehicleDocument.STATUS_CHOICES):
+            qs = qs.filter(status=status)
         if current in ['true', '1']:
             qs = qs.filter(is_current=True)
         if current_month == 'true':
             today = timezone.localdate(); end = today + timedelta(days=30)
             qs = qs.filter(end_date__range=[today, end])
         return qs
+
+    @action(detail=False, methods=['get'], url_path='status-options')
+    def status_options(self, request):
+        options = [{'value': value, 'label': label} for value, label in VehicleDocument.STATUS_CHOICES]
+        return self.success(options, 'Vehicle document statuses fetched successfully')
 
     def perform_create(self, serializer):
         vehicle = serializer.validated_data.get('vehicle')

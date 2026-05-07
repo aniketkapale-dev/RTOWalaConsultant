@@ -48,6 +48,8 @@ const apiGet = (path, options={}) => apiRequest(path, { method:'GET', headers:au
 const apiPost = (path,data,options={}) => apiRequest(path, { method:'POST', body:JSON.stringify(data), ...options });
 const apiPatch = (path,data,options={}) => apiRequest(path, { method:'PATCH', body:JSON.stringify(data), ...options });
 const apiDelete = (path, options={}) => apiRequest(path, { method:'DELETE', headers:authHeaders(false), ...options });
+const apiGetPaginated = (path, options={}) => apiGet(path, options);
+function getPaginatedResults(response){ return response?.data?.results || response?.results || []; }
 function rows(payload){ return payload?.data?.results || payload?.data || payload?.results || payload || []; }
 function byId(id){ return document.getElementById(id); }
 function setText(id, val){ const el=byId(id); if(el) el.innerText = val ?? '-'; }
